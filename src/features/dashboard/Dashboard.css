@@ -1,0 +1,27 @@
+/* subtle background grid behind the dashboard header, matches the landing page */
+.dashboard-grid {
+  background-image:
+    linear-gradient(to right, rgb(0 0 0 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.03) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.dark .dashboard-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.03) 1px, transparent 1px);
+}
+
+/* beautiful scrollbar for the create-startup textarea */
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.15);
+  border-radius: 999px;
+}
+
+.dark .modal-scroll::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.15);
+}

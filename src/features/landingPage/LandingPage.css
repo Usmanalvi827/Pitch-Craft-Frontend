@@ -1,0 +1,225 @@
+/* ==========================================================================
+   PitchCraft — Landing Page Styles
+   Tailwind handles layout/spacing/most visuals. This file only holds what
+   Tailwind utilities can't express cleanly: fonts, theme tokens, glass
+   effects, gradient text, keyframe animations, and scrollbar styling.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+/* --------------------------------------------------------------------------
+   Theme tokens
+   Root wrapper carries data-theme="dark" | "light". Everything themed reads
+   these variables via Tailwind arbitrary values, e.g. bg-[var(--bg)].
+   -------------------------------------------------------------------------- */
+.pc-root {
+  --font-display: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --accent-indigo: #6366f1;
+  --accent-violet: #8b5cf6;
+  --accent-blue: #3b82f6;
+
+  font-family: var(--font-body);
+}
+
+.pc-root[data-theme='dark'] {
+  --bg: #0a0a0b;
+  --bg-elevated: #111113;
+  --surface: #131316;
+  --surface-hover: #18181c;
+  --border: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --text-primary: #f5f5f7;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #6b6b72;
+  --glow: rgba(99, 102, 241, 0.35);
+  --grid-line: rgba(255, 255, 255, 0.035);
+}
+
+.pc-root[data-theme='light'] {
+  --bg: #ffffff;
+  --bg-elevated: #fafafa;
+  --surface: #ffffff;
+  --surface-hover: #f6f6f8;
+  --border: rgba(10, 10, 11, 0.08);
+  --border-strong: rgba(10, 10, 11, 0.14);
+  --text-primary: #0a0a0b;
+  --text-secondary: #52525b;
+  --text-tertiary: #8a8a93;
+  --glow: rgba(99, 102, 241, 0.18);
+  --grid-line: rgba(10, 10, 11, 0.045);
+}
+
+/* --------------------------------------------------------------------------
+   Typography helpers
+   -------------------------------------------------------------------------- */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.gradient-text {
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Background: faint engineering grid, used sparingly behind hero + CTA
+   -------------------------------------------------------------------------- */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.bg-radial-fade {
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 0%, black 40%, transparent 100%);
+}
+
+/* --------------------------------------------------------------------------
+   Glass surface — used for navbar, cards, dashboard mockup panels
+   -------------------------------------------------------------------------- */
+.glass-panel {
+  background: color-mix(in srgb, var(--surface) 60%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+}
+
+.glass-card {
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.glass-card:hover {
+  border-color: var(--border-strong);
+  box-shadow: 0 0 0 1px var(--border-strong), 0 12px 40px -12px var(--glow);
+}
+
+/* --------------------------------------------------------------------------
+   Ambient glow blobs — hero atmosphere, animated slowly, no layout impact
+   -------------------------------------------------------------------------- */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, -4%) scale(1.06); }
+}
+
+.glow-blob {
+  animation: drift 14s ease-in-out infinite;
+  filter: blur(80px);
+}
+
+/* --------------------------------------------------------------------------
+   Generation log ticker — signature element inside hero dashboard mock
+   -------------------------------------------------------------------------- */
+@keyframes blink-caret {
+  0%, 45% { opacity: 1; }
+  50%, 100% { opacity: 0; }
+}
+
+.caret-blink::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 12px;
+  margin-left: 4px;
+  background: var(--accent-indigo);
+  animation: blink-caret 1s steps(1) infinite;
+  vertical-align: middle;
+}
+
+@keyframes ring-progress {
+  from { stroke-dashoffset: 251; }
+}
+
+.progress-ring {
+  animation: ring-progress 1.8s ease-out forwards;
+}
+
+/* --------------------------------------------------------------------------
+   Button interactions
+   -------------------------------------------------------------------------- */
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.25), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.btn-primary:hover::after {
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Custom scrollbar (webkit + firefox)
+   -------------------------------------------------------------------------- */
+.pc-root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.pc-root ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.pc-root ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pc-root ::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+}
+
+.pc-root ::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-indigo);
+}
+
+/* --------------------------------------------------------------------------
+   Marquee for "Trusted By" logo row
+   -------------------------------------------------------------------------- */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* --------------------------------------------------------------------------
+   Reduced motion
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .glow-blob,
+  .marquee-track,
+  .caret-blink::after {
+    animation: none !important;
+  }
+}

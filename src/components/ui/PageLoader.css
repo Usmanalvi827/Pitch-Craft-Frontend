@@ -1,0 +1,31 @@
+/* soft glow pulse behind the logo mark */
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+}
+
+.loader-glow {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+/* gentle float for the logo mark */
+@keyframes logo-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.loader-logo {
+  animation: logo-float 3s ease-in-out infinite;
+}
+
+/* slim two-tone rotating ring, not a giant spinner */
+.loader-ring {
+  border: 2.5px solid transparent;
+  border-top-color: #6366f1;
+  border-right-color: #8b5cf6;
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,0 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+/* faint grid background behind the branding panel */
+.auth-grid {
+  background-image:
+    linear-gradient(to right, rgb(0 0 0 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(0 0 0 / 0.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.dark .auth-grid {
+  background-image:
+    linear-gradient(to right, rgb(255 255 255 / 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(255 255 255 / 0.04) 1px, transparent 1px);
+}
+
+/* glass card used for the auth form and the workspace preview */
+.glass-card {
+  /* background: rgb(255 255 255 / 0.7); */
+  backdrop-filter: blur(12px);
+  border: 1px solid rgb(0 0 0 / 0.08);
+}
+
+.dark .glass-card {
+  background: rgb(255 255 255 / 0.03);
+  border: 1px solid rgb(255 255 255 / 0.08);
+}
+
+/* soft glow blobs behind the branding panel */
+.glow {
+  filter: blur(90px);
+  animation: drift 12s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, -20px); }
+}
+
+/* gentle float for the workspace preview card */
+.float {
+  animation: float 5s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out both;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.5s ease-out both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* scrollbar to match the landing page */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.15);
+  border-radius: 999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.15);
+}
+
+
+.Toastify__toast {
+  border-radius: 0.875rem !important;
+  padding: 14px 16px !important;
+  font-family: 'Inter', sans-serif !important;
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  box-shadow: 0 20px 40px -15px rgb(0 0 0 / 0.25) !important;
+  border: 1px solid rgb(0 0 0 / 0.08) !important;
+  background: #ffffff !important;
+  color: #18181b !important;
+}
+
+.dark .Toastify__toast {
+  background: #111113 !important;
+  color: #f5f5f7 !important;
+  border: 1px solid rgb(255 255 255 / 0.08) !important;
+}
+
+.pc-toast--success {
+  border-left: 3px solid #22c55e !important;
+}
+
+.pc-toast--error {
+  border-left: 3px solid #ef4444 !important;
+}
+
+.pc-toast--warning {
+  border-left: 3px solid #f59e0b !important;
+}
+
+.Toastify__progress-bar {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6, #3b82f6) !important;
+}
+
+.Toastify__close-button {
+  color: currentColor !important;
+  opacity: 0.5 !important;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1 !important;
+}
