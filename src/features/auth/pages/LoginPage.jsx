@@ -62,29 +62,35 @@ export default function LoginPage() {
         password,
       });
 
-    setUser(data.user);
+      setUser(data.user);
+      console.log("data message success ==>>",data?.message);
 
-      toast.success(data?.message || "Login successful.", {
-        className: "pc-toast pc-toast--success",
-      });
-      navigate("/dashboard");
-    } catch (error) {
-      const backendMessage = error?.response?.data?.message;
+     toast.success(data?.message || "Login successful.", {
+  className: "pc-toast pc-toast--success",
+});
+navigate("/dashboard");
+} catch (error) {
+  // console.log("err message", error.message);
 
-      if (backendMessage) {
-        toast.error(backendMessage, { className: "pc-toast pc-toast--error" });
-      } else if (error?.message === "Network Error") {
-        toast.error("Network error. Please check your connection.", {
-          className: "pc-toast pc-toast--error",
-        });
-      } else {
-        toast.error("Something went wrong. Please try again.", {
-          className: "pc-toast pc-toast--error",
-        });
-      }
-    } finally {
-      setLoadingBtn(false);
-    }
+  const backendMessage = error?.response?.data?.message;
+  // console.log("backendMessage", backendMessage);
+
+  if (backendMessage) {
+    toast.error(backendMessage, { className: "pc-toast pc-toast--error" });
+  } else if (error?.response?.status === 429) {
+    // console.log("TOO MANY REQUESTS. PLEASE RETRY AFTER 15 MIN");
+    toast.error("Too many requests. Please retry after 15 minutes.", {
+      className: "pc-toast pc-toast--error",
+    });
+  } else {
+    toast.error("Something went wrong. Please try again.", {
+      className: "pc-toast pc-toast--error",
+    });
+  }
+} finally {
+  setLoadingBtn(false);
+}
+
   }
 
   return (

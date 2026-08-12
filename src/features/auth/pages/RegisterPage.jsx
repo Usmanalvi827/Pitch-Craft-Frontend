@@ -119,8 +119,9 @@ export default function RegisterPage() {
 
       if (backendMessage) {
         toast.error(backendMessage, { className: "pc-toast pc-toast--error" });
-      } else if (error?.message === "Network Error") {
-        toast.error("Network error. Please check your connection.", {
+      } else if (error?.response?.status === 429) {
+        // console.log("TOO MANY REQUESTS. PLEASE RETRY AFTER 15 MIN");
+        toast.error("Too many requests. Please retry after 15 minutes.", {
           className: "pc-toast pc-toast--error",
         });
       } else {
