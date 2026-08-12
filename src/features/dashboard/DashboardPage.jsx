@@ -1,7 +1,7 @@
-import { useContext, useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useContext, useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import {
   Plus,
   ArrowRight,
@@ -20,177 +20,195 @@ import {
   Rocket,
   LogOut,
   Trash2,
-} from 'lucide-react'
-import './Dashboard.css'
-import CreateStartupModal from './CreateStartupModal'
-import { handleLogout } from '../auth/hook/useAuth'
-import { AuthContext } from '../auth/context/auth.context'
-import { getAllUsersRes, deleteUserStartUp } from '../startup/hooks/usedata'
-import { UserDataShowContext } from '../startup/context/main.context'
-import { getErrorMessage } from '../../lib/getErrorMessage'
+} from "lucide-react";
+import "./Dashboard.css";
+import CreateStartupModal from "./CreateStartupModal";
+import { handleLogout } from "../auth/hook/useAuth";
+import { AuthContext } from "../auth/context/auth.context";
+import { getAllUsersRes, deleteUserStartUp } from "../startup/hooks/usedata";
+import { UserDataShowContext } from "../startup/context/main.context";
+import { getErrorMessage } from "../../lib/getErrorMessage";
 
 const activity = [
-  { text: 'Created AI Resume Builder', time: '2 hours ago', icon: Sparkles },
-  { text: 'Updated Market Analysis', time: 'Yesterday', icon: RefreshCw },
-  { text: 'Exported Pitch PDF', time: '3 days ago', icon: FileDown },
-]
+  { text: "Created AI Resume Builder", time: "2 hours ago", icon: Sparkles },
+  { text: "Updated Market Analysis", time: "Yesterday", icon: RefreshCw },
+  { text: "Exported Pitch PDF", time: "3 days ago", icon: FileDown },
+];
 
 const upcomingFeatures = [
-  { label: 'AI Pitch Coach', icon: Wand2 },
-  { label: 'Investor Feedback', icon: MessagesSquare },
-  { label: 'Team Collaboration', icon: Users },
-  { label: 'Presentation Mode', icon: Presentation },
-  { label: 'Version Comparison', icon: GitCompare },
-]
+  { label: "AI Pitch Coach", icon: Wand2 },
+  { label: "Investor Feedback", icon: MessagesSquare },
+  { label: "Team Collaboration", icon: Users },
+  { label: "Presentation Mode", icon: Presentation },
+  { label: "Version Comparison", icon: GitCompare },
+];
 
 const statusStyles = {
-  Completed: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
-  'In Progress': 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-  Draft: 'bg-zinc-500/10 text-zinc-500 dark:text-zinc-400 border-zinc-500/20',
-}
+  Completed: "bg-emerald-500/10 text-emerald-500 border-emerald-500/20",
+  "In Progress": "bg-indigo-500/10 text-indigo-400 border-indigo-500/20",
+  Draft: "bg-zinc-500/10 text-zinc-500 dark:text-zinc-400 border-zinc-500/20",
+};
 
 const STATUS_LABELS = {
-  draft: 'Draft',
-  'in-progress': 'In Progress',
-  completed: 'Completed',
-}
+  draft: "Draft",
+  "in-progress": "In Progress",
+  completed: "Completed",
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 16 },
   show: { opacity: 1, y: 0, transition: { duration: 0.4 } },
-}
+};
 
 function formatRelativeDate(dateString) {
-  if (!dateString) return ''
+  if (!dateString) return "";
 
-  const diffDays = Math.floor((Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24))
+  const diffDays = Math.floor(
+    (Date.now() - new Date(dateString).getTime()) / (1000 * 60 * 60 * 24),
+  );
 
-  if (diffDays <= 0) return 'Today'
-  if (diffDays === 1) return 'Yesterday'
-  if (diffDays < 7) return `${diffDays} days ago`
-  if (diffDays < 14) return 'Last week'
-  return new Date(dateString).toLocaleDateString()
+  if (diffDays <= 0) return "Today";
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays < 14) return "Last week";
+  return new Date(dateString).toLocaleDateString();
 }
 
 export default function DashboardPage() {
-  const [darkMode] = useState(true)
-  const [openModal, setOpenModal] = useState(false)
-  const [loggingOut, setLoggingOut] = useState(false)
-  const [loadingProjects, setLoadingProjects] = useState(true)
-  const [deletingId, setDeletingId] = useState(null)
+  const [darkMode] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const { user, setUser } = useContext(AuthContext)
-  const { allUserProjects, setAllUserProjects } = useContext(UserDataShowContext)
-  const navigate = useNavigate()
+  const { user, setUser } = useContext(AuthContext);
+  const { allUserProjects, setAllUserProjects } =
+    useContext(UserDataShowContext);
+  const navigate = useNavigate();
 
-  const firstName = user?.firstName || user?.firstname
+  const firstName = user?.firstName || user?.firstname;
 
   const userProjects = allUserProjects?.projects || [];
   // console.log(userProjects)
 
-   const normalizedProjects = userProjects.map((project) => {
-   const ideaText = project.idea || '';
-   // Roughly 150 characters equal 4 lines on standard desktop layouts
-   const truncatedDescription = ideaText.length > 150
-     ? ideaText.slice(0, 150).trim() + '...............'
-     : ideaText;
+  const normalizedProjects = userProjects.map((project) => {
+    const ideaText = project.idea || "";
+    // Roughly 150 characters equal 4 lines on standard desktop layouts
+    const truncatedDescription =
+      ideaText.length > 150
+        ? ideaText.slice(0, 150).trim() + "..............."
+        : ideaText;
 
-   return {
-     id: project._id || project.id,
-     name: project.title || 'Untitled Startup',
-     description: truncatedDescription,
-     updated: formatRelativeDate(project.updatedAt) || '',
-     progress: Math.round(((project.modulesCompleted || 0) / 6) * 100),
-     status: STATUS_LABELS[project.status] || 'Draft',
-   };
- });
+    return {
+      id: project._id || project.id,
+      name: project.title || "Untitled Startup",
+      description: truncatedDescription,
+      updated: formatRelativeDate(project.updatedAt) || "",
+      progress: Math.round(((project.modulesCompleted || 0) / 6) * 100),
+      status: STATUS_LABELS[project.status] || "Draft",
+    };
+  });
 
   const stats = [
-    { label: 'Total Projects', value: allUserProjects?.count ?? normalizedProjects.length, icon: Layers },
     {
-      label: 'Completed',
-      value: normalizedProjects.filter((p) => p.status === 'Completed').length,
+      label: "Total Projects",
+      value: allUserProjects?.count ?? normalizedProjects.length,
+      icon: Layers,
+    },
+    {
+      label: "Completed",
+      value: normalizedProjects.filter((p) => p.status === "Completed").length,
       icon: CheckCircle2,
     },
     {
-      label: 'In Progress',
-      value: normalizedProjects.filter((p) => p.status === 'In Progress').length,
+      label: "In Progress",
+      value: normalizedProjects.filter((p) => p.status === "In Progress")
+        .length,
       icon: Loader2,
     },
-    { label: 'Drafts', value: normalizedProjects.filter((p) => p.status === 'Draft').length, icon: FileEdit },
-  ]
+    {
+      label: "Drafts",
+      value: normalizedProjects.filter((p) => p.status === "Draft").length,
+      icon: FileEdit,
+    },
+  ];
 
   async function logoutClickHandler() {
-    if (loggingOut) return
-    setLoggingOut(true)
+    if (loggingOut) return;
+    setLoggingOut(true);
 
     try {
-      await handleLogout()
+      await handleLogout();
     } catch (error) {
       // even if the backend call fails, we still clear the user locally
       // so they can't stay stuck on the dashboard with a dead session
     } finally {
-      localStorage.removeItem('accessToken')
-      setUser(null)
-      setLoggingOut(false)
-      toast.success('Logged out successfully.', { className: 'pc-toast pc-toast--success' })
-      navigate('/login')
+      localStorage.removeItem("accessToken");
+      setUser(null);
+      setLoggingOut(false);
+      toast.success("Logged out successfully.", {
+        className: "pc-toast pc-toast--success",
+      });
+      navigate("/login");
     }
   }
 
   async function handleDeleteProject(project) {
-    const confirmed = window.confirm(`Delete "${project.name}"? This can't be undone.`)
-    if (!confirmed) return
+    const confirmed = window.confirm(
+      `Delete "${project.name}"? This can't be undone.`,
+    );
+    if (!confirmed) return;
 
-    setDeletingId(project.id)
+    setDeletingId(project.id);
     try {
-      await deleteUserStartUp(project.id)
+      await deleteUserStartUp(project.id);
       setAllUserProjects((prev) => ({
         ...prev,
         count: Math.max((prev?.count || 1) - 1, 0),
-        projects: (prev?.projects || []).filter((p) => (p._id || p.id) !== project.id),
-      }))
-      toast.success('Project deleted.', { className: 'pc-toast pc-toast--success' })
+        projects: (prev?.projects || []).filter(
+          (p) => (p._id || p.id) !== project.id,
+        ),
+      }));
+      toast.success("Project deleted.", {
+        className: "pc-toast pc-toast--success",
+      });
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Could not delete this project.'), {
-        className: 'pc-toast pc-toast--error',
-      })
+      toast.error(getErrorMessage(error, "Could not delete this project."), {
+        className: "pc-toast pc-toast--error",
+      });
     } finally {
-      setDeletingId(null)
+      setDeletingId(null);
     }
   }
 
   useEffect(() => {
     async function fetchProjects() {
-      setLoadingProjects(true)
+      setLoadingProjects(true);
       try {
-
-          const data = await getAllUsersRes()
-          
-          console.log(data)
-          setAllUserProjects(data)
+        const data = await getAllUsersRes();
+        // console.log(data)
+        setAllUserProjects(data);
       } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
         if (error?.response?.status === 404) {
-          setAllUserProjects({ count: 0, projects: [] })
+          setAllUserProjects({ count: 0, projects: [] });
         } else {
-          toast.error(getErrorMessage(error, 'Could not load your projects.'), {
-            className: 'pc-toast pc-toast--error',
-          })
+          toast.error(getErrorMessage(error, "Could not load your projects."), {
+            className: "pc-toast pc-toast--error",
+          });
         }
       } finally {
-        setLoadingProjects(false)
+        setLoadingProjects(false);
       }
     }
 
-    fetchProjects()
-  }, [])
+    fetchProjects();
+  }, []);
 
-  console.log("After UseEffect ==>>", userProjects)
-
+  // console.log("After UseEffect ==>>", userProjects)
 
   return (
-    <div className={darkMode ? 'dark' : ''}>
+    <div className={darkMode ? "dark" : ""}>
       <div className="min-h-screen bg-white dark:bg-[#0a0a0b]">
         <div className="max-w-[1200px] mx-auto px-6 py-12">
           {/* header */}
@@ -216,7 +234,7 @@ export default function DashboardPage() {
                 className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-white/10 hover:bg-zinc-50 dark:hover:bg-white/5 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <LogOut className="h-4 w-4" />
-                {loggingOut ? 'Logging out...' : 'Logout'}
+                {loggingOut ? "Logging out..." : "Logout"}
               </button>
 
               <motion.button
@@ -249,8 +267,12 @@ export default function DashboardPage() {
                 <div className="h-9 w-9 flex items-center justify-center rounded-lg bg-indigo-500/10">
                   <stat.icon className="h-4 w-4 text-indigo-500" />
                 </div>
-                <p className="mt-4 text-2xl font-semibold text-zinc-900 dark:text-white">{stat.value}</p>
-                <p className="text-sm text-zinc-500 dark:text-zinc-400">{stat.label}</p>
+                <p className="mt-4 text-2xl font-semibold text-zinc-900 dark:text-white">
+                  {stat.value}
+                </p>
+                <p className="text-sm text-zinc-500 dark:text-zinc-400">
+                  {stat.label}
+                </p>
               </motion.div>
             ))}
           </motion.div>
@@ -329,7 +351,7 @@ export default function DashboardPage() {
                         ) : (
                           <Trash2 className="h-3.5 w-3.5" />
                         )}
-                        {deletingId === project.id ? 'Deleting...' : 'Delete'}
+                        {deletingId === project.id ? "Deleting..." : "Delete"}
                       </button>
 
                       <button
@@ -352,8 +374,9 @@ export default function DashboardPage() {
                   No Startup Projects Yet
                 </h3>
                 <p className="mt-2 max-w-sm text-sm text-zinc-500 dark:text-zinc-400">
-                  Every big startup starts as a rough idea. Create your first project and let
-                  PitchCraft help you shape it into something investor-ready.
+                  Every big startup starts as a rough idea. Create your first
+                  project and let PitchCraft help you shape it into something
+                  investor-ready.
                 </p>
                 <button
                   onClick={() => setOpenModal(true)}
@@ -365,12 +388,13 @@ export default function DashboardPage() {
               </div>
             )}
           </div>
-
-      
         </div>
 
-        <CreateStartupModal open={openModal} onClose={() => setOpenModal(false)} />
+        <CreateStartupModal
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+        />
       </div>
     </div>
-  )
+  );
 }

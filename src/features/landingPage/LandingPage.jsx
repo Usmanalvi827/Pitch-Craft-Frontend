@@ -50,8 +50,8 @@ import { AuthContext } from '../auth/context/auth.context';
    ============================================================================ */
 
 const NAV_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'Workflow', href: '#workflow' },
+  // { label: 'Features', href: '#features' },
+  // { label: 'Workflow', href: '#workflow' },
 ];
 
 const TRUSTED_BY = [
@@ -84,31 +84,19 @@ const FEATURES = [
     title: 'Version History',
     desc: 'Every generation is saved automatically. Compare versions side by side and restore any of them instantly.',
   },
-  {
-    icon: FolderKanban,
-    title: 'Project Workspace',
-    desc: 'Every startup idea lives in its own workspace — sections, versions, and exports organized in one place.',
-  },
+
   {
     icon: Lightbulb,
     title: 'AI Suggestions',
     desc: 'PitchCraft flags what a real investor would ask about: missing numbers, a weak value proposition, thin market sizing.',
   },
-  {
-    icon: PenLine,
-    title: 'Rich Editor',
-    desc: 'A clean, distraction-free writing surface for editing AI output by hand, with formatting that stays consistent.',
-  },
+
   {
     icon: Save,
     title: 'Autosave',
     desc: 'Every edit is saved as you type. Close the tab, come back tomorrow — nothing is ever lost.',
   },
-  {
-    icon: FileDown,
-    title: 'Export',
-    desc: 'Ship your pitch as a formatted PDF or DOCX, ready to send to investors or drop into a deck.',
-  },
+
 ];
 
 const PRODUCT_STEPS = [
@@ -152,17 +140,16 @@ const WORKFLOW_STEPS = [
   { step: '01', title: 'Create Project', desc: 'Start a new workspace for a single startup idea.' },
   { step: '02', title: 'Describe Startup', desc: 'Give PitchCraft the raw idea in your own words.' },
   { step: '03', title: 'Generate Sections', desc: 'Generate Problem, Solution, Market, and more — one at a time.' },
-  { step: '04', title: 'Export Pitch', desc: 'Download a polished, investor-ready PDF or DOCX.' },
 ];
 
 const PITCH_SECTIONS_FLOW = ['Idea', 'Problem', 'Solution', 'Business Model', 'Financials', 'Pitch Ready'];
 
 const FOOTER_LINKS = [
-  { label: 'Features', href: '#features' },
-  { label: 'Pricing', href: '#pricing' },
-  { label: 'Contact', href: '#contact' },
-  { label: 'Privacy', href: '#privacy' },
-  { label: 'Terms', href: '#terms' },
+  // { label: 'Features', href: '#features' },
+  // { label: 'Pricing', href: '#pricing' },
+  // { label: 'Contact', href: '#contact' },
+  // { label: 'Privacy', href: '#privacy' },
+  // { label: 'Terms', href: '#terms' },
 ];
 
 const GENERATION_LOG = [
@@ -297,12 +284,12 @@ function Navbar({ theme, toggleTheme }) {
               Login
             
             </Link>
-            <a
+            <Link to={"/register"}
               href="#get-started"
               className="btn-primary inline-flex items-center gap-1.5 rounded-lg bg-[var(--text-primary)] text-[var(--bg)] text-sm font-semibold px-4 py-2 hover:opacity-90 transition-opacity"
             >
               Get Started
-            </a>
+            </Link>
           </div>
 
           {/* Mobile toggle */}
@@ -346,15 +333,15 @@ function Navbar({ theme, toggleTheme }) {
                   </a>
                 ))}
                 <div className="h-px bg-[var(--border)] my-2" />
-                <a href="#login" className="px-3 py-2.5 rounded-lg text-sm font-medium text-[var(--text-secondary)]">
+                <Link to={"/login"}  className="px-3 py-2.5 rounded-lg text-sm font-medium text-[var(--text-secondary)]">
                   Login
-                </a>
-                <a
+                </Link>
+                <Link to={"/register"}
                   href="#get-started"
                   className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--text-primary)] text-[var(--bg)] text-sm font-semibold px-4 py-2.5"
                 >
                   Get Started
-                </a>
+                </Link>
               </div>
             </motion.div>
           )}
@@ -458,10 +445,7 @@ function HeroDashboardMock() {
             <History className="h-3.5 w-3.5" />
             v4 saved 2m ago
           </span>
-          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[var(--text-primary)] px-2.5 py-1.5 rounded-lg border border-[var(--border)]">
-            <FileDown className="h-3.5 w-3.5" />
-            Export PDF
-          </span>
+       
         </div>
       </div>
 
@@ -520,20 +504,14 @@ function Hero() {
             </motion.p>
 
             <motion.div variants={fadeUp} className="mt-9 flex flex-wrap items-center gap-4">
-              <a
+              <Link to={"/register"}
                 href="#get-started"
                 className="btn-primary inline-flex items-center gap-2 rounded-lg bg-[var(--text-primary)] text-[var(--bg)] font-semibold px-5 py-3 text-sm hover:opacity-90 transition-opacity"
               >
                 Get Started
                 <ArrowRight className="h-4 w-4" />
-              </a>
-              <a
-                href="#workflow"
-                className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-5 py-3 text-sm font-semibold text-[var(--text-primary)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-hover)] transition-colors"
-              >
-                <PlayCircle className="h-4 w-4" />
-                Watch Demo
-              </a>
+              </Link>
+             
             </motion.div>
 
             <motion.p variants={fadeUp} className="mt-8 font-mono text-xs text-[var(--text-tertiary)]">
@@ -594,7 +572,7 @@ function FeaturesGrid() {
         <SectionHeading
           eyebrow="Features"
           title="Everything a real pitch workflow needs"
-          subtitle="Not a single-shot generator. A workspace built around generating, editing, and refining one section at a time."
+          subtitle="Not a single-shot generator. A workspace built around generating, and refining one section at a time."
         />
 
         <motion.div
@@ -759,7 +737,7 @@ function DashboardPreview() {
         <Reveal delay={0.1} className="mt-14 max-w-xl mx-auto">
           <div className="glass-card rounded-2xl p-6 sm:p-7">
             <p className="font-display text-sm font-semibold text-[var(--text-primary)]">
-              Welcome back, Usman 👋
+              Welcome back, John 👋
             </p>
             <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
               Turn your ideas into successful startups.
@@ -864,19 +842,14 @@ function CTABanner() {
                 Start with your idea. PitchCraft handles the structure.
               </p>
               <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
-                <a
+                <Link to={"/register"}
                   href="#get-started"
                   className="btn-primary inline-flex items-center gap-2 rounded-lg bg-[var(--text-primary)] text-[var(--bg)] font-semibold px-6 py-3.5 text-sm hover:opacity-90 transition-opacity"
                 >
                   Start Free
                   <ArrowRight className="h-4 w-4" />
-                </a>
-                <a
-                  href="#features"
-                  className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-6 py-3.5 text-sm font-semibold text-[var(--text-primary)] hover:bg-[var(--surface-hover)] transition-colors"
-                >
-                  Learn More
-                </a>
+                </Link>
+             
               </div>
             </div>
           </div>
