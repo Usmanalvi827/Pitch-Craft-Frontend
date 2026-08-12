@@ -4,6 +4,7 @@ import {
   createStartUpProject,
   generateSection,
   getCompleteReport,
+  deleteCompleteReport,
 } from "../api/api";
 
 export async function getAllUsersRes() {
@@ -30,3 +31,22 @@ export async function getCompleteReportRes(id) {
   const data = await getCompleteReport(id);
   return data;
 }
+
+
+export async function deleteUserStartUp(id) {
+  const data = await deleteCompleteReport(id)
+  return data;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

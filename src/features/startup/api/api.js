@@ -49,3 +49,9 @@ export async function getCompleteReport(id) {
   const response = await api.get(`api/start-up/projects/${id}/complete-report`);
   return response.data;
 }
+
+// Delete Whole Start-Up Project -->>
+export async function deleteCompleteReport (id) {
+  const response = await api.delete(`api/start-up/projects/${id}`);
+  return response.data;
+}

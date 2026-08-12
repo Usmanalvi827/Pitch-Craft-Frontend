@@ -19,12 +19,13 @@ import {
   GitCompare,
   Rocket,
   LogOut,
+  Trash2,
 } from 'lucide-react'
 import './Dashboard.css'
 import CreateStartupModal from './CreateStartupModal'
 import { handleLogout } from '../auth/hook/useAuth'
 import { AuthContext } from '../auth/context/auth.context'
-import { getAllUsersRes } from '../startup/hooks/usedata'
+import { getAllUsersRes, deleteUserStartUp } from '../startup/hooks/usedata'
 import { UserDataShowContext } from '../startup/context/main.context'
 import { getErrorMessage } from '../../lib/getErrorMessage'
 
@@ -76,6 +77,7 @@ export default function DashboardPage() {
   const [openModal, setOpenModal] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   const [loadingProjects, setLoadingProjects] = useState(true)
+  const [deletingId, setDeletingId] = useState(null)
 
   const { user, setUser } = useContext(AuthContext)
   const { allUserProjects, setAllUserProjects } = useContext(UserDataShowContext)
@@ -133,6 +135,28 @@ export default function DashboardPage() {
       setLoggingOut(false)
       toast.success('Logged out successfully.', { className: 'pc-toast pc-toast--success' })
       navigate('/login')
+    }
+  }
+
+  async function handleDeleteProject(project) {
+    const confirmed = window.confirm(`Delete "${project.name}"? This can't be undone.`)
+    if (!confirmed) return
+
+    setDeletingId(project.id)
+    try {
+      await deleteUserStartUp(project.id)
+      setAllUserProjects((prev) => ({
+        ...prev,
+        count: Math.max((prev?.count || 1) - 1, 0),
+        projects: (prev?.projects || []).filter((p) => (p._id || p.id) !== project.id),
+      }))
+      toast.success('Project deleted.', { className: 'pc-toast pc-toast--success' })
+    } catch (error) {
+      toast.error(getErrorMessage(error, 'Could not delete this project.'), {
+        className: 'pc-toast pc-toast--error',
+      })
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -293,7 +317,19 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="mt-5 flex items-center justify-between">
-                     
+                      <button
+                        onClick={() => handleDeleteProject(project)}
+                        disabled={deletingId === project.id}
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-zinc-400 dark:text-zinc-500 hover:text-red-500 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {deletingId === project.id ? (
+                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="h-3.5 w-3.5" />
+                        )}
+                        {deletingId === project.id ? 'Deleting...' : 'Delete'}
+                      </button>
+
                       <button
                         onClick={() => navigate(`/startup/${project.id}`)}
                         className="inline-flex items-center gap-1.5 text-sm font-medium text-indigo-500 hover:text-indigo-400 transition-colors"
