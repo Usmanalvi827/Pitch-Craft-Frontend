@@ -36,8 +36,11 @@ export default function StartupWorkspace() {
     async function fetchProject() {
       setLoadingProject(true)
       try {
+        if(!singleUser) {
         const data = await getSingleUserRes(id)
+        
         setSingleUser(data)
+        }
       } catch (error) {
         toast.error(getErrorMessage(error, 'Could not load this project.'), {
           className: 'pc-toast pc-toast--error',

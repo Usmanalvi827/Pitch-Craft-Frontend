@@ -164,9 +164,11 @@ export default function DashboardPage() {
     async function fetchProjects() {
       setLoadingProjects(true)
       try {
-        const data = await getAllUsersRes()
-        // console.log(data)
-        setAllUserProjects(data)
+
+          const data = await getAllUsersRes()
+          
+          console.log(data)
+          setAllUserProjects(data)
       } catch (error) {
         console.log(error.message)
         if (error?.response?.status === 404) {
@@ -184,7 +186,7 @@ export default function DashboardPage() {
     fetchProjects()
   }, [])
 
-  // console.log("After UseEffect ==>>", userProjects)
+  console.log("After UseEffect ==>>", userProjects)
 
 
   return (

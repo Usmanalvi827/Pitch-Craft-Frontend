@@ -1,34 +1,40 @@
-import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import { ArrowLeft } from 'lucide-react'
-import GeneratedContentView from '../components/GeneratedContentView'
-import { startupModules } from '../data/startupModules'
-import { getCompleteReportRes } from '../hooks/usedata'
-import { getErrorMessage } from '../../../lib/getErrorMessage'
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
+import { toast } from "react-toastify";
+import { ArrowLeft } from "lucide-react";
+import GeneratedContentView from "../components/GeneratedContentView";
+import { startupModules } from "../data/startupModules";
+import { getCompleteReportRes } from "../hooks/usedata";
+import { getErrorMessage } from "../../../lib/getErrorMessage";
 
 export default function CompletePitchPage() {
-  const { id } = useParams()
-  const [report, setReport] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { id } = useParams();
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  async function fetchReport() {
+    setLoading(true);
+    try {
+      const data = await getCompleteReportRes(id);
+      setReport(data?.data);
+    } catch (error) {
+      toast.error(
+        getErrorMessage(error, "Could not load the complete pitch."),
+        {
+          className: "pc-toast pc-toast--error",
+        },
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function fetchReport() {
-      setLoading(true)
-      try {
-        const data = await getCompleteReportRes(id)
-        setReport(data?.data)
-      } catch (error) {
-        toast.error(getErrorMessage(error, 'Could not load the complete pitch.'), {
-          className: 'pc-toast pc-toast--error',
-        })
-      } finally {
-        setLoading(false)
-      }
-    }
+  
+      fetchReport();
+  }, [id]);
 
-    fetchReport()
-  }, [id])
+  console.log(!report)
 
   return (
     <div className="dark">
@@ -47,7 +53,9 @@ export default function CompletePitchPage() {
           </h1>
 
           {loading ? (
-            <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">Loading...</p>
+            <p className="mt-8 text-sm text-zinc-500 dark:text-zinc-400">
+              Loading...
+            </p>
           ) : report ? (
             <div className="mt-8 space-y-10">
               {startupModules.map((module) => (
@@ -64,7 +72,8 @@ export default function CompletePitchPage() {
           ) : (
             <div className="mt-8 rounded-2xl border border-dashed border-zinc-200 dark:border-white/10 p-8 text-center">
               <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                Nothing to show here yet. Complete all 6 modules in the workspace first.
+                Nothing to show here yet. Complete all 6 modules in the
+                workspace first.
               </p>
               <Link
                 to={`/startup/${id}`}
@@ -77,5 +86,5 @@ export default function CompletePitchPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -13,16 +13,7 @@ export default function WorkspaceHeader({ name, status, progress }) {
     >
       {/* Left side: Avatar + Title */}
       <div className="flex items-center gap-3">
-        {/* Avatar */}
-        <motion.img
-          src="/avatar.png" // replace with your avatar path
-          alt="Project Avatar"
-          className="h-12 w-12 rounded-full border border-zinc-200 dark:border-white/10"
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.5 }}
-        />
-
+     
         <div>
           {loadingProjects ? (
             <h1 className="font-display text-2xl sm:text-3xl font-semibold text-zinc-900 dark:text-white">

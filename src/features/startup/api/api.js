@@ -46,7 +46,9 @@ export async function generateSection(id, path) {
 }
 
 export async function getCompleteReport(id) {
-  const response = await api.get(`api/start-up/projects/${id}/complete-report`);
+  const response = await api.get(`api/start-up/projects/${id}/complete-report`, {
+    headers: { "Cache-Control": "no-cache" },
+  });
   return response.data;
 }
 

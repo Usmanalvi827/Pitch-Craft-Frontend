@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import {
   Sparkles,
@@ -17,11 +17,9 @@ import {
   PenLine,
   FolderKanban,
   Lightbulb,
-  ChevronDown,
   Check,
   Loader2,
   Circle,
-  Star,
   GraduationCap,
   Rocket,
   Zap,
@@ -32,12 +30,19 @@ import {
 //   Github,
 //   Linkedin,
   Clock,
-  ShieldCheck,
   Target,
-  SlidersHorizontal,
+  Eye,
+  FileText,
+  Layers,
+  ListChecks,
+  LayoutTemplate,
+  Presentation,
+  CheckCircle2,
+  FileEdit,
 } from 'lucide-react';
 import './LandingPage.css';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../auth/context/auth.context';
 
 /* ============================================================================
    STATIC CONTENT — kept as data so sections render via .map() instead of
@@ -47,8 +52,6 @@ import { Link } from 'react-router-dom';
 const NAV_LINKS = [
   { label: 'Features', href: '#features' },
   { label: 'Workflow', href: '#workflow' },
-  { label: 'Why PitchCraft', href: '#why' },
-  { label: 'FAQ', href: '#faq' },
 ];
 
 const TRUSTED_BY = [
@@ -108,64 +111,51 @@ const FEATURES = [
   },
 ];
 
+const PRODUCT_STEPS = [
+  {
+    step: '01',
+    icon: Rocket,
+    title: 'Create Your Startup',
+    description: 'Start with your startup name, idea, industry, and target country.',
+  },
+  {
+    step: '02',
+    icon: LayoutDashboard,
+    title: 'Build Your Startup',
+    description:
+      'Generate your overview, business model, audience, features, landing page, and pitch — one section at a time, not all at once.',
+  },
+  {
+    step: '03',
+    icon: Eye,
+    title: 'View Your Results',
+    description: 'Open each generated section and see your AI-generated startup content in one place.',
+  },
+  {
+    step: '04',
+    icon: Check,
+    title: 'Complete Your Pitch',
+    description: 'Finish all six sections and turn your startup idea into a complete, investor-ready pitch.',
+  },
+];
+
+const PITCHCRAFT_MODULES = [
+  { icon: FileText, label: 'Startup Overview' },
+  { icon: Layers, label: 'Business Model' },
+  { icon: Users, label: 'Target Audience' },
+  { icon: ListChecks, label: 'Core Features' },
+  { icon: LayoutTemplate, label: 'Landing Page' },
+  { icon: Presentation, label: 'Investor Pitch' },
+];
+
 const WORKFLOW_STEPS = [
   { step: '01', title: 'Create Project', desc: 'Start a new workspace for a single startup idea.' },
   { step: '02', title: 'Describe Startup', desc: 'Give PitchCraft the raw idea in your own words.' },
   { step: '03', title: 'Generate Sections', desc: 'Generate Problem, Solution, Market, and more — one at a time.' },
-  { step: '04', title: 'Edit with AI', desc: 'Refine any section, or edit it directly yourself.' },
-  { step: '05', title: 'Export Pitch', desc: 'Download a polished, investor-ready PDF or DOCX.' },
+  { step: '04', title: 'Export Pitch', desc: 'Download a polished, investor-ready PDF or DOCX.' },
 ];
 
 const PITCH_SECTIONS_FLOW = ['Idea', 'Problem', 'Solution', 'Business Model', 'Financials', 'Pitch Ready'];
-
-const WHY_REASONS = [
-  { icon: Clock, title: 'Save hours of work', desc: 'What takes a weekend of blank-page staring takes minutes with a guided workflow.' },
-  { icon: ShieldCheck, title: 'Professional quality', desc: 'Structured output modeled on how real pitch decks are actually written.' },
-  { icon: Target, title: 'Investor-friendly', desc: 'Language and structure tuned for the questions investors actually ask.' },
-  { icon: LayoutDashboard, title: 'Structured workflow', desc: 'No blank page. Every section has a clear starting point.' },
-  { icon: SlidersHorizontal, title: 'Maintain complete control', desc: 'AI drafts, you decide. Edit, regenerate, or leave it exactly as written.' },
-  { icon: Wand2, title: 'Generate only what you need', desc: 'Skip sections you already have. Regenerate only the ones that need work.' },
-];
-
-const TESTIMONIALS = [
-  {
-    name: 'Amara Chen',
-    role: 'Founder, Loop Health',
-    quote: 'I had the idea for months and no idea how to structure it. PitchCraft gave me a pitch I actually sent to investors the same week.',
-    initials: 'AC',
-  },
-  {
-    name: 'Daniel Osei',
-    role: 'Computer Science Student',
-    quote: 'Used it for a hackathon pitch at 2am. The section-by-section flow meant I could fix just the parts judges pushed back on.',
-    initials: 'DO',
-  },
-  {
-    name: 'Priya Nair',
-    role: 'Incubator Program Lead',
-    quote: 'We now recommend it to every cohort. It gets founders past the blank page without writing the pitch for them.',
-    initials: 'PN',
-  },
-];
-
-const FAQS = [
-  {
-    q: 'Can I edit the AI output?',
-    a: 'Yes. Every section opens in a full editor. Edit AI-generated text directly, or ask AI to refine it and edit the result.',
-  },
-  {
-    q: 'Can I export my pitch?',
-    a: 'Yes, as a formatted PDF or DOCX at any point — even before every section is finished.',
-  },
-  {
-    q: 'Does AI replace me as the founder?',
-    a: 'No. PitchCraft drafts structure and language. The idea, decisions, and final wording are always yours to keep or change.',
-  },
-  {
-    q: 'Can I create multiple startups?',
-    a: 'Yes. Your dashboard holds unlimited projects, each with its own sections, versions, and export history.',
-  },
-];
 
 const FOOTER_LINKS = [
   { label: 'Features', href: '#features' },
@@ -635,12 +625,78 @@ function FeaturesGrid() {
 }
 
 /* ============================================================================
+   HOW PITCHCRAFT WORKS — the real product flow: create, build section by
+   section, view results, complete the pitch. Kept separate from the older
+   HowItWorks/WorkflowShowcase sections below rather than replacing them.
+   ============================================================================ */
+
+function HowPitchCraftWorks() {
+  const { user } = useContext(AuthContext);
+
+  return (
+    <section className="py-24 sm:py-32 bg-[var(--bg-elevated)]">
+      <div className="max-w-6xl mx-auto px-5">
+        <SectionHeading
+          eyebrow="How It Works"
+          title="How PitchCraft Works"
+          subtitle="Turn your startup idea into a complete pitch, one section at a time."
+        />
+
+        <motion.div
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.1 }}
+          variants={staggerContainer(0.08)}
+          className="mt-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        >
+          {PRODUCT_STEPS.map((item) => (
+            <motion.div key={item.step} variants={fadeUp} className="glass-card rounded-2xl p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500/15 via-violet-500/15 to-blue-500/15 border border-[var(--border)]">
+                  <item.icon className="h-5 w-5 text-[var(--accent-violet)]" strokeWidth={1.75} />
+                </div>
+                <span className="font-mono text-xs text-[var(--text-tertiary)]">{item.step}</span>
+              </div>
+              <h3 className="font-display mt-4 text-base font-semibold text-[var(--text-primary)]">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm text-[var(--text-secondary)] leading-relaxed">{item.description}</p>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        <Reveal delay={0.1} className="mt-8">
+          <div className="glass-card rounded-2xl px-6 py-5 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+            {PITCHCRAFT_MODULES.map((module) => (
+              <div key={module.label} className="flex items-center gap-2">
+                <module.icon className="h-4 w-4 text-[var(--accent-indigo)]" strokeWidth={1.75} />
+                <span className="text-sm font-medium text-[var(--text-secondary)]">{module.label}</span>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.15} className="mt-10 flex justify-center">
+          <Link
+            to={user ? '/dashboard' : '/register'}
+            className="btn-primary inline-flex items-center gap-2 rounded-lg bg-[var(--text-primary)] text-[var(--bg)] font-semibold px-5 py-3 text-sm hover:opacity-90 transition-opacity"
+          >
+            Start Building Your Pitch
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ============================================================================
    HOW IT WORKS — real sequential timeline, numbering is meaningful here
    ============================================================================ */
 
 function HowItWorks() {
   return (
-    <section id="workflow" className="py-28 sm:py-36 bg-[var(--bg-elevated)]">
+    <section id="workflow" className="py-28 sm:py-36">
       <div className="max-w-5xl mx-auto px-5">
         <SectionHeading
           eyebrow="Workflow"
@@ -679,55 +735,63 @@ function HowItWorks() {
 }
 
 /* ============================================================================
-   WHY PITCHCRAFT — two column, reasons + mockup
+   DASHBOARD PREVIEW — one compact panel that actually matches the real
+   dashboard (greeting, stats, one project card), not an invented mockup.
    ============================================================================ */
 
-function WhyPitchCraft() {
-  return (
-    <section id="why" className="py-28 sm:py-36">
-      <div className="max-w-6xl mx-auto px-5 grid lg:grid-cols-2 gap-16 items-center">
-        <Reveal>
-          <Eyebrow>Why PitchCraft</Eyebrow>
-          <h2 className="font-display mt-6 text-3xl sm:text-4xl font-semibold leading-tight text-[var(--text-primary)]">
-            Built for control, not automation for its own sake
-          </h2>
-          <div className="mt-10 space-y-6">
-            {WHY_REASONS.map((r) => (
-              <div key={r.title} className="flex items-start gap-4">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-hover)] border border-[var(--border)]">
-                  <r.icon className="h-4 w-4 text-[var(--accent-indigo)]" strokeWidth={1.75} />
-                </div>
-                <div>
-                  <p className="font-semibold text-sm text-[var(--text-primary)]">{r.title}</p>
-                  <p className="text-sm text-[var(--text-secondary)] mt-1 leading-relaxed">{r.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
+function DashboardPreview() {
+  const stats = [
+    { label: 'Total Projects', value: 4, icon: Layers },
+    { label: 'Completed', value: 1, icon: CheckCircle2 },
+    { label: 'In Progress', value: 2, icon: Loader2 },
+    { label: 'Drafts', value: 1, icon: FileEdit },
+  ];
 
-        <Reveal delay={0.1} className="relative">
-          <div className="glass-card rounded-2xl p-6">
-            <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
-              <p className="font-display text-sm font-semibold text-[var(--text-primary)]">Business Model</p>
-              <span className="font-mono text-[10px] px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                edited
-              </span>
+  return (
+    <section className="py-24 sm:py-32">
+      <div className="max-w-6xl mx-auto px-5">
+        <SectionHeading
+          eyebrow="Dashboard"
+          title="Your projects, at a glance"
+          subtitle="Every startup you build lives in one dashboard — progress, status, and next steps included."
+        />
+
+        <Reveal delay={0.1} className="mt-14 max-w-xl mx-auto">
+          <div className="glass-card rounded-2xl p-6 sm:p-7">
+            <p className="font-display text-sm font-semibold text-[var(--text-primary)]">
+              Welcome back, Usman 👋
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+              Turn your ideas into successful startups.
+            </p>
+
+            <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {stats.map((stat) => (
+                <div key={stat.label} className="rounded-xl border border-[var(--border)] p-3">
+                  <stat.icon className="h-3.5 w-3.5 text-[var(--accent-indigo)]" />
+                  <p className="mt-2 text-lg font-semibold text-[var(--text-primary)]">{stat.value}</p>
+                  <p className="text-[11px] text-[var(--text-tertiary)]">{stat.label}</p>
+                </div>
+              ))}
             </div>
-            <div className="py-4 space-y-3">
-              <div className="h-2.5 rounded-full bg-[var(--surface-hover)] w-full" />
-              <div className="h-2.5 rounded-full bg-[var(--surface-hover)] w-11/12" />
-              <div className="h-2.5 rounded-full bg-[var(--surface-hover)] w-4/5" />
-              <div className="h-2.5 rounded-full bg-[var(--surface-hover)] w-full" />
-              <div className="h-2.5 rounded-full bg-[var(--surface-hover)] w-3/4" />
-            </div>
-            <div className="flex items-center gap-2 pt-4 border-t border-[var(--border)]">
-              <button className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] border border-[var(--border)] rounded-lg px-3 py-1.5 hover:text-[var(--text-primary)]">
-                <RefreshCw className="h-3.5 w-3.5" /> Regenerate
-              </button>
-              <button className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-secondary)] border border-[var(--border)] rounded-lg px-3 py-1.5 hover:text-[var(--text-primary)]">
-                <Wand2 className="h-3.5 w-3.5" /> Make investor-friendly
-              </button>
+
+            <div className="mt-4 rounded-xl border border-[var(--border)] p-4">
+              <div className="flex items-start justify-between gap-3">
+                <p className="font-display text-sm font-semibold text-[var(--text-primary)]">HealthMate AI</p>
+                <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                  In Progress
+                </span>
+              </div>
+              <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[var(--surface-hover)]">
+                <div
+                  className="h-full rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-blue-500"
+                  style={{ width: '67%' }}
+                />
+              </div>
+              <div className="mt-3 flex items-center justify-between text-xs">
+                <span className="text-[var(--text-tertiary)]">Last updated Today</span>
+                <span className="font-medium text-[var(--accent-indigo)]">Open Workspace →</span>
+              </div>
             </div>
           </div>
         </Reveal>
@@ -774,192 +838,6 @@ function WorkflowShowcase() {
                 <ArrowRight className="h-4 w-4 text-[var(--text-tertiary)] shrink-0" />
               )}
             </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================================
-   DASHBOARD PREVIEW
-   ============================================================================ */
-
-function DashboardPreview() {
-  const projects = [
-    { name: 'Aurora Health', progress: 67, sections: '4/6' },
-    { name: 'Fleet Sense', progress: 100, sections: '6/6' },
-    { name: 'Nomad Ledger', progress: 33, sections: '2/6' },
-  ];
-  const activity = [
-    { label: 'Business Model generated', time: '2m ago', icon: Wand2 },
-    { label: 'Exported Fleet Sense to PDF', time: '1h ago', icon: FileDown },
-    { label: 'Restored v2 of Target Audience', time: '3h ago', icon: History },
-    { label: 'AI suggestion applied to Pricing', time: 'Yesterday', icon: Lightbulb },
-  ];
-
-  return (
-    <section className="py-28 sm:py-36">
-      <div className="max-w-6xl mx-auto px-5">
-        <SectionHeading
-          eyebrow="Dashboard"
-          title="Every startup idea, in one workspace"
-          subtitle="Track progress, revisit versions, and pick up exactly where you left off."
-        />
-
-        <Reveal delay={0.1} className="mt-16">
-          <div className="glass-card rounded-2xl p-6 sm:p-8">
-            <div className="grid lg:grid-cols-[1.3fr_1fr] gap-8">
-              {/* Projects list */}
-              <div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-tertiary)] mb-4">
-                  Projects
-                </p>
-                <div className="space-y-3">
-                  {projects.map((p) => (
-                    <div
-                      key={p.name}
-                      className="flex items-center justify-between rounded-xl border border-[var(--border)] px-4 py-3.5 hover:border-[var(--border-strong)] transition-colors"
-                    >
-                      <div>
-                        <p className="text-sm font-semibold text-[var(--text-primary)]">{p.name}</p>
-                        <p className="font-mono text-[11px] text-[var(--text-tertiary)] mt-0.5">{p.sections} sections</p>
-                      </div>
-                      <div className="flex items-center gap-3 w-32">
-                        <div className="h-1.5 flex-1 rounded-full bg-[var(--surface-hover)] overflow-hidden">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
-                            style={{ width: `${p.progress}%` }}
-                          />
-                        </div>
-                        <span className="font-mono text-[11px] text-[var(--text-secondary)] w-8 text-right">
-                          {p.progress}%
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Recent activity */}
-              <div>
-                <p className="font-mono text-[11px] uppercase tracking-[0.14em] text-[var(--text-tertiary)] mb-4">
-                  Recent Activity
-                </p>
-                <div className="space-y-4">
-                  {activity.map((a) => (
-                    <div key={a.label} className="flex items-start gap-3">
-                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[var(--surface-hover)] border border-[var(--border)]">
-                        <a.icon className="h-3.5 w-3.5 text-[var(--accent-indigo)]" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-[var(--text-primary)] leading-snug">{a.label}</p>
-                        <p className="font-mono text-[10px] text-[var(--text-tertiary)] mt-0.5">{a.time}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================================
-   TESTIMONIALS
-   ============================================================================ */
-
-function Testimonials() {
-  return (
-    <section className="py-28 sm:py-36 bg-[var(--bg-elevated)]">
-      <div className="max-w-6xl mx-auto px-5">
-        <SectionHeading eyebrow="Testimonials" title="Founders and builders, before the funding round" />
-
-        <motion.div
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-          variants={staggerContainer(0.08)}
-          className="mt-16 grid md:grid-cols-3 gap-5"
-        >
-          {TESTIMONIALS.map((t) => (
-            <motion.div key={t.name} variants={fadeUp} className="glass-card rounded-2xl p-6 flex flex-col">
-              <div className="flex gap-0.5 mb-4">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-[var(--accent-violet)] text-[var(--accent-violet)]" />
-                ))}
-              </div>
-              <p className="text-sm text-[var(--text-secondary)] leading-relaxed flex-1">“{t.quote}”</p>
-              <div className="flex items-center gap-3 mt-6 pt-5 border-t border-[var(--border)]">
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 via-violet-500 to-blue-500 text-white text-xs font-semibold">
-                  {t.initials}
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-[var(--text-primary)]">{t.name}</p>
-                  <p className="text-xs text-[var(--text-tertiary)]">{t.role}</p>
-                </div>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================================
-   FAQ — animated accordion
-   ============================================================================ */
-
-function FAQItem({ item, isOpen, onClick }) {
-  return (
-    <div className="border-b border-[var(--border)]">
-      <button
-        onClick={onClick}
-        className="w-full flex items-center justify-between py-5 text-left gap-4"
-        aria-expanded={isOpen}
-      >
-        <span className="text-base font-medium text-[var(--text-primary)]">{item.q}</span>
-        <ChevronDown
-          className={`h-4 w-4 shrink-0 text-[var(--text-secondary)] transition-transform duration-300 ${
-            isOpen ? 'rotate-180' : ''
-          }`}
-        />
-      </button>
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="overflow-hidden"
-          >
-            <p className="pb-5 text-sm text-[var(--text-secondary)] leading-relaxed max-w-xl">{item.a}</p>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function FAQ() {
-  const [openIndex, setOpenIndex] = useState(0);
-  return (
-    <section id="faq" className="py-28 sm:py-36">
-      <div className="max-w-3xl mx-auto px-5">
-        <SectionHeading eyebrow="FAQ" title="Common questions" />
-        <div className="mt-14">
-          {FAQS.map((item, i) => (
-            <FAQItem
-              key={item.q}
-              item={item}
-              isOpen={openIndex === i}
-              onClick={() => setOpenIndex(openIndex === i ? -1 : i)}
-            />
           ))}
         </div>
       </div>
@@ -1124,12 +1002,10 @@ export default function LandingPage() {
         <Hero />
         <TrustedBy />
         <FeaturesGrid />
+        <HowPitchCraftWorks />
         <HowItWorks />
-        <WhyPitchCraft />
-        <WorkflowShowcase />
         <DashboardPreview />
-        <Testimonials />
-        <FAQ />
+        <WorkflowShowcase />
         <CTABanner />
       </main>
 
