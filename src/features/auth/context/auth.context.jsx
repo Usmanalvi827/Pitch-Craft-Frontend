@@ -11,13 +11,11 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function rehydrateUser() {
       const token = localStorage.getItem("accessToken");
-
       if (!token) {
         setUser(null);
         setLoadingPage(false);
         return;
       }
-
       try {
         const data = await getMeAPI();
         setUser(data);
@@ -28,8 +26,13 @@ export function AuthProvider({ children }) {
         setLoadingPage(false);
       }
     }
-
     rehydrateUser();
+
+    // 🔑 Expose setAccessToken globally for interceptor
+    window.setAccessToken = (token) => {
+      localStorage.setItem("accessToken", token);
+      getMeAPI().then(setUser).catch(() => setUser(null));
+    };
   }, []);
 
   const isAuthenticated = !!user;
