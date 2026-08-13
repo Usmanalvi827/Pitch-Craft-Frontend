@@ -79,7 +79,12 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Only refresh if token expired
+    if (
+      error.response?.status === 401 &&
+      error.response?.data?.message === "Access token expired" &&
+      !originalRequest._retry
+    ) {
       originalRequest._retry = true;
 
       try {
@@ -88,15 +93,13 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem("accessToken");
-        // Hard redirect on purpose: it resets AuthContext's in-memory state
-        // along with everything else, instead of leaving stale user data
-        // sitting in React state after the refresh token has died.
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }
 
     return Promise.reject(error);
-  },
+  }
 );
+
 export default api;
