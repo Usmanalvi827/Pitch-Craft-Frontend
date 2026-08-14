@@ -27,12 +27,6 @@ export function AuthProvider({ children }) {
       }
     }
     rehydrateUser();
-
-    // 🔑 Expose setAccessToken globally for interceptor
-    window.setAccessToken = (token) => {
-      localStorage.setItem("accessToken", token);
-      getMeAPI().then(setUser).catch(() => setUser(null));
-    };
   }, []);
 
   const isAuthenticated = !!user;

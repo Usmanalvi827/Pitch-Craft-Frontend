@@ -86,7 +86,7 @@ export default function DashboardPage() {
     useContext(UserDataShowContext);
   const navigate = useNavigate();
 
-  const firstName = user?.firstName || user?.firstname;
+  const firstName = user?.firstName;
 
   const userProjects = allUserProjects?.projects || [];
   // console.log(userProjects)

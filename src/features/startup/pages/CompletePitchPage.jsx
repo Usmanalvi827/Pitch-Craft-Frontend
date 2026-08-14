@@ -34,7 +34,7 @@ export default function CompletePitchPage() {
       fetchReport();
   }, [id]);
 
-  console.log(!report)
+  // console.log(!report)
 
   return (
     <div className="dark">

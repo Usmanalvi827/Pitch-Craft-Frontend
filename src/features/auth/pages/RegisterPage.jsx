@@ -213,7 +213,7 @@ export default function RegisterPage() {
                     <input
                       name="firstName"
                       type="text"
-                      placeholder="Ada"
+                      placeholder="john"
                       className="w-full pl-11 pr-3 py-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.03] text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition"
                     />
                   </div>
@@ -227,7 +227,7 @@ export default function RegisterPage() {
                     <input
                       name="lastName"
                       type="text"
-                      placeholder="Lovelace"
+                      placeholder="last"
                       className="w-full pl-11 pr-3 py-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.03] text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition"
                     />
                   </div>
@@ -243,7 +243,7 @@ export default function RegisterPage() {
                   <input
                     name="userName"
                     type="text"
-                    placeholder="adalovelace"
+                    placeholder="john last"
                     className="w-full pl-11 pr-4 py-3 rounded-xl border border-zinc-200 dark:border-white/10 bg-zinc-50 dark:bg-white/[0.03] text-sm text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 transition"
                   />
                 </div>

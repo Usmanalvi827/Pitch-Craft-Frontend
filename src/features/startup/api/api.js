@@ -1,20 +1,4 @@
-import axios from "axios";
-// import { api } from "../../../lib/apiClient";
- 
-const api = axios.create({
-  baseURL: "http://localhost:3000/",
-  withCredentials: true,
-  // timeout: 10000,
-});
-
-// Attach access token to every request
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+import { api } from "../../../lib/apiClient";
 
 export async function getUserStartUpProjects() {
   const response = await api.get("api/start-up/projects", {
