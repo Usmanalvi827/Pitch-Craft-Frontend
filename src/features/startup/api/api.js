@@ -24,8 +24,13 @@ export async function createStartUpProject({ title, idea, industry, country, sta
 }
 
 // path matches the module's apiPath in startupModules.js, e.g. "generate-overview"
+// AI generation genuinely takes longer than the app's normal 10s timeout
+// (up to ~60s for landing page / pitch), so this needs its own override
+// instead of using the global default meant for fast CRUD/auth calls.
 export async function generateSection(id, path) {
-  const response = await api.post(`api/projects/${id}/${path}`);
+  const response = await api.post(`api/projects/${id}/${path}`, null, {
+    timeout: 90000,
+  });
   return response.data;
 }
 
