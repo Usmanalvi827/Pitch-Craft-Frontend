@@ -63,7 +63,7 @@ export default function LoginPage() {
       });
 
       setUser(data.user);
-      console.log("data message success ==>>",data?.message);
+      // console.log("data message success ==>>",data?.message);
 
      toast.success(data?.message || "Login successful.", {
   className: "pc-toast pc-toast--success",
